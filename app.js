@@ -237,21 +237,34 @@ const toggleAdd = document.getElementById("toggleAdd");
 const addForm = document.getElementById("addForm");
 const cancelAdd = document.getElementById("cancelAdd");
 const addNotice = document.getElementById("addNotice");
+const moreFields = document.getElementById("moreFields");
+const toggleMoreFields = document.getElementById("toggleMoreFields");
 
 function resetAddExtras() {
   document.getElementById("cardPreview").classList.add("hidden");
   document.getElementById("f_priceHint").textContent = "";
   priceLinkedToMarket = true;
   currentCardPrices = { normal: null, reverse: null };
+  moreFields.classList.add("hidden");
+  toggleMoreFields.textContent = "▾ Viac možností (séria, rarita, jazyk, poznámka...)";
 }
 
+toggleMoreFields.addEventListener("click", () => {
+  const nowHidden = moreFields.classList.toggle("hidden");
+  toggleMoreFields.textContent = nowHidden
+    ? "▾ Viac možností (séria, rarita, jazyk, poznámka...)"
+    : "▴ Menej možností";
+});
+
 toggleAdd.addEventListener("click", () => {
-  addForm.classList.toggle("hidden");
+  const nowHidden = addForm.classList.toggle("hidden");
+  toggleAdd.textContent = nowHidden ? "+ Pridať kartu" : "✕ Zavrieť formulár";
 });
 cancelAdd.addEventListener("click", () => {
   addForm.reset();
   resetAddExtras();
   addForm.classList.add("hidden");
+  toggleAdd.textContent = "+ Pridať kartu";
 });
 
 function findDuplicateCard(payload) {
@@ -320,6 +333,7 @@ async function submitAddForm() {
     addForm.reset();
     resetAddExtras();
     addForm.classList.add("hidden");
+    toggleAdd.textContent = "+ Pridať kartu";
     await loadCards();
     showAddNotice(`✅ Túto kartu (${duplicate.name}, stav ${duplicate.condition}) už máš — teraz jej máš ${newQty}×!`);
     return;
@@ -329,6 +343,7 @@ async function submitAddForm() {
   addForm.reset();
   resetAddExtras();
   addForm.classList.add("hidden");
+  toggleAdd.textContent = "+ Pridať kartu";
   await loadCards();
 }
 

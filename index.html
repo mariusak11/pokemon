@@ -45,18 +45,6 @@
         <input type="hidden" id="f_setid">
       </div>
       <div class="field">
-        <label>Séria (set)</label>
-        <input type="text" id="f_set" placeholder="napr. Base Set">
-      </div>
-      <div class="field">
-        <label>Číslo karty</label>
-        <input type="text" id="f_number" placeholder="napr. 25/102">
-      </div>
-      <div class="field">
-        <label>Rarita</label>
-        <input type="text" id="f_rarity" placeholder="napr. Holo Rare">
-      </div>
-      <div class="field">
         <label>Variant</label>
         <select id="f_variant">
           <option value="normal" selected>Normálna</option>
@@ -76,19 +64,6 @@
         </select>
       </div>
       <div class="field">
-        <label>Jazyk</label>
-        <select id="f_language">
-          <option value="EN" selected>Angličtina</option>
-          <option value="DE">Nemčina</option>
-          <option value="FR">Francúzština</option>
-          <option value="JP">Japončina</option>
-          <option value="ES">Španielčina</option>
-          <option value="IT">Taliančina</option>
-          <option value="PL">Poľština</option>
-          <option value="Other">Iný</option>
-        </select>
-      </div>
-      <div class="field">
         <label>Počet kusov</label>
         <input type="number" id="f_quantity" min="1" value="1">
       </div>
@@ -97,14 +72,45 @@
         <input type="number" id="f_price" min="0" step="0.01" placeholder="napr. 3.50">
         <small id="f_priceHint" class="price-hint"></small>
       </div>
-      <div class="field">
-        <label>URL obrázka</label>
-        <input type="text" id="f_image" placeholder="vyplní sa automaticky pri výbere zo zoznamu">
+
+      <button type="button" id="toggleMoreFields" class="field wide more-toggle">▾ Viac možností (séria, rarita, jazyk, poznámka...)</button>
+
+      <div id="moreFields" class="more-fields hidden">
+        <div class="field">
+          <label>Séria (set)</label>
+          <input type="text" id="f_set" placeholder="napr. Base Set">
+        </div>
+        <div class="field">
+          <label>Číslo karty</label>
+          <input type="text" id="f_number" placeholder="napr. 25/102">
+        </div>
+        <div class="field">
+          <label>Rarita</label>
+          <input type="text" id="f_rarity" placeholder="napr. Holo Rare">
+        </div>
+        <div class="field">
+          <label>Jazyk</label>
+          <select id="f_language">
+            <option value="EN" selected>Angličtina</option>
+            <option value="DE">Nemčina</option>
+            <option value="FR">Francúzština</option>
+            <option value="JP">Japončina</option>
+            <option value="ES">Španielčina</option>
+            <option value="IT">Taliančina</option>
+            <option value="PL">Poľština</option>
+            <option value="Other">Iný</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>URL obrázka</label>
+          <input type="text" id="f_image" placeholder="vyplní sa automaticky pri výbere zo zoznamu">
+        </div>
+        <div class="field wide">
+          <label>Poznámka</label>
+          <input type="text" id="f_notes" placeholder="napr. z boosteru, darček...">
+        </div>
       </div>
-      <div class="field wide">
-        <label>Poznámka</label>
-        <input type="text" id="f_notes" placeholder="napr. z boosteru, darček...">
-      </div>
+
       <div class="field wide actions">
         <button type="submit" class="btn primary">Uložiť kartu</button>
         <button type="button" id="cancelAdd" class="btn">Zrušiť</button>
@@ -129,7 +135,7 @@
   </section>
 
   <section id="grid" class="grid"></section>
-  <p id="emptyState" class="empty hidden">Zatiaľ tu nemáš žiadne karty. Pridaj prvú vyššie 👆</p>
+  <p id="emptyState" class="empty hidden">Zatiaľ tu nemáš žiadne karty. Klikni na "+ Pridať kartu" a pridaj prvú 👆</p>
 
   <section id="setsView" class="panel hidden">
     <div class="sets-search-row">
