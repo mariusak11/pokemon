@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Moja Pokémon zbierka</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <h1><span class="pokeball" aria-hidden="true"></span> Moja Pokémon zbierka</h1>
+  <div class="stats">
+    <div class="stat"><span id="statCount">0</span><small>kariet</small></div>
+    <div class="stat highlight"><span id="statValue">0,00 €</span><small>odhadovaná hodnota</small></div>
+  </div>
+</header>
+
+<main>
+  <section class="panel add-panel">
+    <button id="toggleAdd" class="btn primary">+ Pridať kartu</button>
+    <form id="addForm" class="add-form hidden">
+      <div class="field wide autocomplete-wrap">
+        <label>Karta (názov + číslo) *</label>
+        <input type="text" id="f_name" required autocomplete="off" placeholder="napr. Houndour 59/109">
+        <div id="suggestions" class="suggestions hidden"></div>
+        <div id="cardPreview" class="card-preview hidden">
+          <img id="cp_img" alt="">
+          <div class="cp-text">
+            <strong id="cp_name"></strong>
+            <span id="cp_meta"></span>
+          </div>
+          <button type="button" id="cp_clear" class="cp-clear" title="Zmeniť kartu">✕</button>
+        </div>
+        <input type="hidden" id="f_tcgid">
+        <input type="hidden" id="f_cmurl">
+        <input type="hidden" id="f_marketprice">
+        <input type="hidden" id="f_setid">
+      </div>
+      <div class="field">
+        <label>Séria (set)</label>
+        <input type="text" id="f_set" placeholder="napr. Base Set">
+      </div>
+      <div class="field">
+        <label>Číslo karty</label>
+        <input type="text" id="f_number" placeholder="napr. 25/102">
+      </div>
+      <div class="field">
+        <label>Rarita</label>
+        <input type="text" id="f_rarity" placeholder="napr. Holo Rare">
+      </div>
+      <div class="field">
+        <label>Variant</label>
+        <select id="f_variant">
+          <option value="normal" selected>Normálna</option>
+          <option value="reverse_holo">Reverse Holo</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Stav</label>
+        <select id="f_condition">
+          <option value="M">Mint (M)</option>
+          <option value="NM" selected>Near Mint (NM)</option>
+          <option value="EX">Excellent (EX)</option>
+          <option value="GD">Good (GD)</option>
+          <option value="LP">Light Played (LP)</option>
+          <option value="PL">Played (PL)</option>
+          <option value="PO">Poor (PO)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Jazyk</label>
+        <select id="f_language">
+          <option value="EN" selected>Angličtina</option>
+          <option value="DE">Nemčina</option>
+          <option value="FR">Francúzština</option>
+          <option value="JP">Japončina</option>
+          <option value="ES">Španielčina</option>
+          <option value="IT">Taliančina</option>
+          <option value="PL">Poľština</option>
+          <option value="Other">Iný</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Počet kusov</label>
+        <input type="number" id="f_quantity" min="1" value="1">
+      </div>
+      <div class="field">
+        <label>Cena (€)</label>
+        <input type="number" id="f_price" min="0" step="0.01" placeholder="napr. 3.50">
+        <small id="f_priceHint" class="price-hint"></small>
+      </div>
+      <div class="field">
+        <label>URL obrázka</label>
+        <input type="text" id="f_image" placeholder="vyplní sa automaticky pri výbere zo zoznamu">
+      </div>
+      <div class="field wide">
+        <label>Poznámka</label>
+        <input type="text" id="f_notes" placeholder="napr. z boosteru, darček...">
+      </div>
+      <div class="field wide actions">
+        <button type="submit" class="btn primary">Uložiť kartu</button>
+        <button type="button" id="cancelAdd" class="btn">Zrušiť</button>
+      </div>
+    </form>
+    <p id="addNotice" class="add-notice hidden"></p>
+  </section>
+
+  <section class="panel toolbar">
+    <input type="text" id="searchBox" placeholder="🔍 Hľadať v zbierke...">
+    <select id="sortBox">
+      <option value="added_desc">Najnovšie pridané</option>
+      <option value="name_asc">Názov A–Z</option>
+      <option value="price_desc">Cena zostupne</option>
+      <option value="price_asc">Cena vzostupne</option>
+    </select>
+    <button id="refreshPrices" class="btn" type="button">🔄 Aktualizovať ceny z Cardmarketu</button>
+    <button id="toggleSets" class="btn" type="button">📚 Moje sety</button>
+    <button id="exportData" class="btn" type="button">💾 Exportovať zálohu</button>
+    <button id="importDataBtn" class="btn" type="button">📂 Importovať zálohu</button>
+    <input type="file" id="importDataInput" accept="application/json" class="hidden">
+  </section>
+
+  <section id="grid" class="grid"></section>
+  <p id="emptyState" class="empty hidden">Zatiaľ tu nemáš žiadne karty. Pridaj prvú vyššie 👆</p>
+
+  <section id="setsView" class="panel hidden">
+    <div class="sets-search-row">
+      <input type="text" id="setSearchInput" autocomplete="off" placeholder="🔍 Hľadať iný set (napr. Team Rocket Returns)">
+      <div id="setSuggestions" class="suggestions hidden"></div>
+    </div>
+    <div id="setsList" class="sets-list"></div>
+    <div id="setDetail" class="set-detail hidden">
+      <button id="setDetailBack" class="btn" type="button">⬅ Späť na zoznam setov</button>
+      <button id="setDetailRefresh" class="btn" type="button" title="Znova stiahnuť zoznam kariet a ceny pre tento set">🔄 Obnoviť dáta setu</button>
+      <h3 id="setDetailTitle"></h3>
+      <div class="progress-outer"><div id="setDetailProgressFill" class="progress-fill"></div></div>
+      <p id="setDetailSummary" class="set-summary"></p>
+      <div id="setDetailGrid" class="grid"></div>
+    </div>
+  </section>
+</main>
+
+<div id="editModal" class="modal hidden">
+  <div class="modal-card">
+    <h2>Upraviť kartu</h2>
+    <form id="editForm">
+      <input type="hidden" id="e_id">
+      <input type="hidden" id="e_marketprice">
+      <div class="field"><label>Názov</label><input type="text" id="e_name" required></div>
+      <div class="field"><label>Séria</label><input type="text" id="e_set"></div>
+      <div class="field"><label>Číslo</label><input type="text" id="e_number"></div>
+      <div class="field"><label>Rarita</label><input type="text" id="e_rarity"></div>
+      <div class="field">
+        <label>Variant</label>
+        <select id="e_variant">
+          <option value="normal">Normálna</option>
+          <option value="reverse_holo">Reverse Holo</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Stav</label>
+        <select id="e_condition">
+          <option value="M">Mint (M)</option>
+          <option value="NM">Near Mint (NM)</option>
+          <option value="EX">Excellent (EX)</option>
+          <option value="GD">Good (GD)</option>
+          <option value="LP">Light Played (LP)</option>
+          <option value="PL">Played (PL)</option>
+          <option value="PO">Poor (PO)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Jazyk</label>
+        <select id="e_language">
+          <option value="EN">Angličtina</option>
+          <option value="DE">Nemčina</option>
+          <option value="FR">Francúzština</option>
+          <option value="JP">Japončina</option>
+          <option value="ES">Španielčina</option>
+          <option value="IT">Taliančina</option>
+          <option value="PL">Poľština</option>
+          <option value="Other">Iný</option>
+        </select>
+      </div>
+      <div class="field"><label>Počet kusov</label><input type="number" id="e_quantity" min="1"></div>
+      <div class="field">
+        <label>Cena (€)</label>
+        <input type="number" id="e_price" min="0" step="0.01">
+        <small id="e_priceHint" class="price-hint"></small>
+      </div>
+      <div class="field wide"><label>Poznámka</label><input type="text" id="e_notes"></div>
+      <div class="field wide actions">
+        <button type="submit" class="btn primary">Uložiť</button>
+        <button type="button" id="deleteCard" class="btn danger">Odstrániť kartu</button>
+        <button type="button" id="closeModal" class="btn">Zavrieť</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
