@@ -4,6 +4,7 @@ const grid = document.getElementById("grid");
 const emptyState = document.getElementById("emptyState");
 const statCount = document.getElementById("statCount");
 const statValue = document.getElementById("statValue");
+const toolbarEl = document.getElementById("toolbar");
 
 function eur(n) {
   return new Intl.NumberFormat("sk-SK", { style: "currency", currency: "EUR" }).format(n || 0);
@@ -153,6 +154,9 @@ function render() {
   const list = filteredSortedCards();
   grid.innerHTML = "";
   emptyState.classList.toggle("hidden", state.cards.length > 0);
+  // Vyhľadávanie, triedenie a ostatné tlačidlá nemajú zmysel, kým nemáš ani jednu
+  // kartu - schované, nech prvé otvorenie appky pôsobí čo najjednoduchšie.
+  toolbarEl.classList.toggle("hidden", state.cards.length === 0);
 
   let totalValue = 0;
   let totalCount = 0;
@@ -256,15 +260,21 @@ toggleMoreFields.addEventListener("click", () => {
     : "▴ Menej možností";
 });
 
+function setAddFormOpen(open) {
+  addForm.classList.toggle("hidden", !open);
+  toggleAdd.textContent = open ? "✕ Zavrieť formulár" : "+ Pridať kartu";
+  // Kým je formulár otvorený, tlačidlo sa na mobile nemá plávať dole (prekrývalo
+  // by "Uložiť kartu"/"Zrušiť") - vráti sa do normálneho toku stránky.
+  toggleAdd.classList.toggle("form-open", open);
+}
+
 toggleAdd.addEventListener("click", () => {
-  const nowHidden = addForm.classList.toggle("hidden");
-  toggleAdd.textContent = nowHidden ? "+ Pridať kartu" : "✕ Zavrieť formulár";
+  setAddFormOpen(addForm.classList.contains("hidden"));
 });
 cancelAdd.addEventListener("click", () => {
   addForm.reset();
   resetAddExtras();
-  addForm.classList.add("hidden");
-  toggleAdd.textContent = "+ Pridať kartu";
+  setAddFormOpen(false);
 });
 
 function findDuplicateCard(payload) {
@@ -332,8 +342,7 @@ async function submitAddForm() {
     updateLocalCard(duplicate.id, { quantity: newQty });
     addForm.reset();
     resetAddExtras();
-    addForm.classList.add("hidden");
-    toggleAdd.textContent = "+ Pridať kartu";
+    setAddFormOpen(false);
     await loadCards();
     showAddNotice(`✅ Túto kartu (${duplicate.name}, stav ${duplicate.condition}) už máš — teraz jej máš ${newQty}×!`);
     return;
@@ -342,8 +351,7 @@ async function submitAddForm() {
   createLocalCard(payload);
   addForm.reset();
   resetAddExtras();
-  addForm.classList.add("hidden");
-  toggleAdd.textContent = "+ Pridať kartu";
+  setAddFormOpen(false);
   await loadCards();
 }
 
@@ -1008,7 +1016,7 @@ async function openSetDetail(setId, setName, forceRefresh) {
         toggleSets.textContent = "📚 Moje sety";
         setsView.classList.add("hidden");
         grid.classList.remove("hidden");
-        addForm.classList.remove("hidden");
+        setAddFormOpen(true);
         selectCard(item);
         addForm.scrollIntoView({ behavior: "smooth", block: "start" });
       });

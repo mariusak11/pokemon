@@ -470,12 +470,13 @@ input:focus, select:focus {
 
   .panel { padding: 14px; border-radius: 16px; }
 
-  /* Vyhľadávacie pole nech je samo na riadku, tlačidlá pod ním v mriežke po dvoch -
-     na úzkom displeji by sa inak všetko poskladalo do jedného dlhého stĺpca. */
-  .toolbar { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .toolbar input#searchBox { grid-column: 1 / -1; min-width: 0; }
-  .toolbar select#sortBox { grid-column: 1 / -1; max-width: none; }
-  .toolbar .btn { flex: none; width: 100%; font-size: 0.8rem; padding: 10px 8px; }
+  /* Na úzkom displeji radšej jeden prehľadný stĺpec - v mriežke po dvoch sa dlhšie
+     texty tlačidiel (napr. "Aktualizovať ceny z Cardmarketu") zalamovali na 2 riadky
+     a tlačidlá v tom istom riadku vyzerali nerovnako vysoké. */
+  .toolbar { display: flex; flex-direction: column; gap: 8px; }
+  .toolbar input#searchBox { min-width: 0; }
+  .toolbar select#sortBox { max-width: none; }
+  .toolbar .btn { width: 100%; }
 
   .grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
 
@@ -487,10 +488,11 @@ input:focus, select:focus {
   .set-detail .btn { width: 100%; margin-bottom: 8px; }
 
   /* "+ Pridať kartu" ako plávajúce tlačidlo dole, nech naň dosiahneš palcom
-     bez toho, aby si musel/a skrolovať na vrch obrazovky. */
+     bez toho, aby si musel/a skrolovať na vrch obrazovky. Len kým je formulár
+     zatvorený - keď je otvorený, tlačidlo by prekrývalo "Uložiť kartu"/"Zrušiť"
+     na konci formulára, tak sa vtedy vráti do normálneho toku stránky. */
   main { padding-bottom: 84px; }
-  .add-panel { position: static; }
-  #toggleAdd {
+  #toggleAdd:not(.form-open) {
     position: fixed;
     left: 50%;
     bottom: 18px;
