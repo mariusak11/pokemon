@@ -87,7 +87,9 @@ h1, h2, h3, .btn, label, .card-title, .stat span {
   font-size: 1.6rem;
   text-shadow: 0 2px 3px rgba(0,0,0,0.25);
   letter-spacing: 0.3px;
+  cursor: pointer;
 }
+.topbar h1:active { opacity: 0.85; }
 .stats { display: flex; gap: 16px; }
 .stat {
   background: rgba(255,255,255,0.25);

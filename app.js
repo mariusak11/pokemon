@@ -1146,4 +1146,17 @@ importDataInput.addEventListener("change", async () => {
   }
 });
 
+// ---- Klik na nadpis hore = vždy späť na moje karty (zavrie sety/formulár) ----
+document.getElementById("homeLink").addEventListener("click", () => {
+  setsView.classList.add("hidden");
+  grid.classList.remove("hidden");
+  toggleSets.textContent = "📚 Moje sety";
+  addForm.reset();
+  resetAddExtras();
+  setAddFormOpen(false);
+  editModal.classList.add("hidden");
+  render();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
 loadCards();
